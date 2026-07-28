@@ -19,3 +19,4 @@ with open("resources/仙逆人物志.html","r",encoding="utf-8") as f:
         print(td_list)
 
     #你好这是我2026-7-28的提交记录
+    print("你好这是我2026-7-28的提交记录")
