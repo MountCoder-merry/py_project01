@@ -20,4 +20,4 @@ with open("resources/仙逆人物志.html","r",encoding="utf-8") as f:
 
 #2026-7-30日 github提交
 #2026-7-30日 github提交2
-#2026-7-30日 github提交8
+#2026-7-30日 github提交9
