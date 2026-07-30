@@ -18,7 +18,4 @@ with open("resources/仙逆人物志.html","r",encoding="utf-8") as f:
         td_list = tr.xpath("./td/text()")
         print(td_list)
 
-    #你好这是我2026-7-28的提交记录
-    print("你好这是我2026-7-28的提交记录")
-    #你好这是我2026-7-29的提交记录
-    print("你好这是我2026-7-29的提交记录")
+#2026-7-30日 github提交
