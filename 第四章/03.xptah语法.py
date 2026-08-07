@@ -14,13 +14,3 @@ with open("resources/仙逆人物志.html","r",encoding="utf_8") as f:
     for tr in tr_list:
         td_list = tr.xpath("./td/text()")
         print(td_list)
-
-#2026-7-30日 github提交
-#2026-7-30日 github提交2
-#2026-7-30日 github提交10
-#2026-7-31日 github提交
-#2026-8-1日 github提交
-#2026-8-3日 github提交
-#2026-8-4日 github提交
-#2026-8-5日 github提交
-#2026-8-6日 github提交
