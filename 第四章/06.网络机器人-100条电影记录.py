@@ -1,3 +1,12 @@
+import time
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.0",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "zh-CN,zh;q=0.9",
+}
+
+
 import  requests
 import csv
 from lxml import html
@@ -55,37 +64,48 @@ def get_movie_info(movie_info_url):
     print(movie_info)
 
     return movie_info
-
 def main():
     all_movies = []
-    for page_num in range(1,6):
-        # 1. 发送请求，获取高分电影榜单数据
+    for page_num in range(1, 6):
+        # 1. 发送请求
         if page_num == 1:
-            response = requests.get(TMDB_TOP_URL_1, timeout=60)
+            response = requests.get(TMDB_TOP_URL_1, headers=HEADERS, timeout=60)
         else:
-            response = requests.post(TMDB_TOP_URL_2, f"air_date.gte=&air_date.lte=&certification=&certification_country=HK&debug=&first_air_date.gte=&first_air_date.lte=&include_adult=false&include_softcore=false&latest_ceremony.gte=&latest_ceremony.lte=&page={page_num}&primary_release_date.gte=&primary_release_date.lte=&region=&release_date.gte=&release_date.lte=2027-02-10&show_me=everything&sort_by=vote_average.desc&vote_average.gte=0&vote_average.lte=10&vote_count.gte=300&watch_region=HK&with_genres=&with_keywords=&with_networks=&with_origin_country=&with_original_language=&with_watch_monetization_types=&with_watch_providers=&with_release_type=&with_runtime.gte=0&with_runtime.lte=400", timeout=60)
-        print(f"发送请求,正在访问第{page_num}页数据")
-        # 2. 解析数据，获取电影列表
+            data = {
+                "page": page_num,
+                "sort_by": "vote_average.desc",
+                "vote_count.gte": 300,
+                "release_date.lte": "2027-02-10",
+                "show_me": "everything",
+                "include_adult": "false",
+                "watch_region": "HK",
+                "certification_country": "HK",
+            }
+            response = requests.post(TMDB_TOP_URL_2, data=data, headers=HEADERS, timeout=60)
+
+        print(f"发送请求，正在访问第 {page_num} 页数据")
+
+        # 2. 解析数据
         document = html.fromstring(response.text)
-        movie_list = document.xpath('//div[contains(@class, "media-card-list contents w-full")]')
-        # movie_list = document.xpath(
-        #     "//*[@id='page_{page_num}']/div/div/div[@class='w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-colors hover:border-gray-300']")
-        print(f"获取到{len(movie_list)}部电影")
-        # 3. 遍历电影列表，获取电影详情
-        for movie in movie_list:
-            movie_urls = movie.xpath("./div/div/a/@href")
-            if movie_urls:
-                # 电影详情中的url
-                movie_info_url = TMDB_BASE_URL + movie_urls[0]
-                # print(movie_info_url)
-                # 发送请求，获取电影详情数据
+        movie_cards = document.xpath(
+            '//div[contains(@class, "media-list-results")]/div[contains(@class, "rounded-xl")]'
+        )
+        print(f"获取到 {len(movie_cards)} 部电影")
+
+        # 3. 遍历提取
+        for card in movie_cards:
+            href_list = card.xpath('.//a[contains(@href, "/movie/")]/@href')
+            if href_list:
+                movie_info_url = TMDB_BASE_URL + href_list[0]
                 movie_info = get_movie_info(movie_info_url)
                 all_movies.append(movie_info)
-        print(all_movies)
-    # 4. 保存数据，保存为 csv 文件
-    save_all_movies(all_movies)
 
-#8/8
-#8/9
+        print(f"第 {page_num} 页完成，累计 {len(all_movies)} 部")
+        time.sleep(1)  # 防封
+
+    # 4. 保存
+    save_all_movies(all_movies)
+    print(f"全部完成，共保存 {len(all_movies)} 部电影")
+
 if __name__ == '__main__':
     main()
