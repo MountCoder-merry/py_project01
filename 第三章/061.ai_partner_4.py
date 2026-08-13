@@ -192,3 +192,4 @@ if prompt:
             response_placeholder.write(full_response)
 
     st.session_state.messages.append({"role": "assistant", "content": full_response})
+    #8月13日
